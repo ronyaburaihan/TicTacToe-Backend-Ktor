@@ -47,7 +47,7 @@ class TicTacToeGame {
         }
     }
 
-    suspend fun broadcast(state: GameState) {
+    private suspend fun broadcast(state: GameState) {
         playerSockets.values.forEach { socket ->
             socket.send(
                 Json.encodeToString(state)
@@ -75,15 +75,33 @@ class TicTacToeGame {
                 playerAtTurn = if (currentPlayer == "X") "O" else "X",
                 field = newField,
                 isBoardFull = isBoardFull,
-                /*winingPlayer = getWinningPlayer()?.also {
+                winingPlayer = getWinningPlayer()?.also {
                     startNewRoundDelay()
-                }*/
+                }
             )
         }
     }
 
-    /*private fun getWinningPlayer(): Any {
-    }*/
+    private fun getWinningPlayer(): String? {
+        val field = state.value.field
+        return if (field[0][0] != null && field[0][0] == field[0][1] && field[0][1] == field[0][2]) {
+            field[0][0]
+        } else if (field[1][0] != null && field[1][0] == field[1][1] && field[1][1] == field[1][2]) {
+            field[1][0]
+        } else if (field[2][0] != null && field[2][0] == field[2][1] && field[2][1] == field[2][2]) {
+            field[2][0]
+        } else if (field[0][0] != null && field[0][0] == field[1][0] && field[1][0] == field[2][0]) {
+            field[0][0]
+        } else if (field[0][1] != null && field[0][1] == field[1][1] && field[1][1] == field[2][1]) {
+            field[0][1]
+        } else if (field[0][2] != null && field[0][2] == field[1][2] && field[1][2] == field[2][2]) {
+            field[0][2]
+        } else if (field[0][0] != null && field[0][0] == field[1][1] && field[1][1] == field[2][2]) {
+            field[0][0]
+        } else if (field[0][2] != null && field[0][2] == field[1][1] && field[1][1] == field[2][0]) {
+            field[0][2]
+        } else null
+    }
 
     private fun startNewRoundDelay() {
         delayGameJob?.cancel()
